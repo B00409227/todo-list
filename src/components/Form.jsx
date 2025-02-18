@@ -1,21 +1,18 @@
+//Form.jsx
+import React from "react";
 import { useState } from "react";
 
 function Form(props) {
-  const [name, setName] = useState('');
-
-  // NOTE: As written, this function has a bug: it doesn't prevent the user
-  // from submitting an empty form. This is left as an exercise for developers
-  // working through MDN's React tutorial.
-  function handleSubmit(event) {
-    event.preventDefault();
-    if (name.trim()) { 
-      props.addTask(name);
-      setName("");
-    }
-  }
+  const [name, setName] = useState("");
 
   function handleChange(event) {
     setName(event.target.value);
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    props.addTask(name);
+    setName("");
   }
 
   return (
@@ -25,7 +22,6 @@ function Form(props) {
           What needs to be done?
         </label>
       </h2>
-
       <input
         type="text"
         id="new-todo-input"

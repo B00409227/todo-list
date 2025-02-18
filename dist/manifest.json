@@ -2,7 +2,7 @@
 {
         "name": "Abdul's To-Do List",
         "short_name": "to-do list",
-        "start_url": "./index.html",
+        "start_url": ".",
         "homepage":".",
         "display": "standalone",
         "background_color": "#ffffff",
@@ -30,5 +30,5 @@
         "type": "image/png"
         }
 
-    ]
+         ]
 }
