@@ -1,5 +1,5 @@
 // App.jsx
-import React from "react";
+import React, { useRef } from "react";
 import { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
 import Todo from "./components/Todo";
@@ -13,6 +13,31 @@ const FILTER_MAP = {
 };
 
 function App(props) {
+  const listHeadingRef = useRef(null);
+
+  const geoFindMe = () => {
+    if (!navigator.geolocation) {
+    console.log("Geolocation is not supported by your browser");
+    } else {
+    console.log("Locating…");
+    navigator.geolocation.getCurrentPosition(success, error);
+    }
+    };
+    const success = (position) => {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    console.log(latitude, longitude);
+    console.log(`Latitude: ${latitude}°, Longitude: ${longitude}°`);
+    console.log(`Try here: https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`);
+    locateTask(lastInsertedId, {
+    latitude: latitude,
+    longitude: longitude,
+    error: "",
+    });
+    };
+    const error = () => {
+    console.log("Unable to retrieve your location");
+    };
  
   const [tasks, setTasks] = useState(() => {
     const savedTasks = localStorage.getItem('tasks');
@@ -20,6 +45,7 @@ function App(props) {
   });
   
   const [filter, setFilter] = useState("All");
+  const [lastInsertedId, setLastInsertedId] = useState("");
 
   
   useEffect(() => {
@@ -27,9 +53,16 @@ function App(props) {
   }, [tasks]);
 
   function addTask(name) {
-    const newTask = { id: `todo-${nanoid()}`, name, completed: false };
+    const id = "todo-" + nanoid();
+    const newTask = {
+    id: id,
+    name: name,
+    completed: false,
+    location: { latitude: "##", longitude: "##", error: "##" },
+    };
+    setLastInsertedId(id);
     setTasks([...tasks, newTask]);
-  }
+    }
 
   function toggleTaskCompleted(id) {
     const updatedTasks = tasks.map((task) => {
@@ -74,6 +107,8 @@ function App(props) {
         name={task.name}
         completed={task.completed}
         key={task.id}
+        latitude={task.location.latitude} 
+        longitude={task.location.longitude} 
         toggleTaskCompleted={toggleTaskCompleted}
         deleteTask={deleteTask}
         editTask={editTask}
@@ -85,21 +120,21 @@ function App(props) {
 
   return (
     <div className="todoapp stack-large">
-      <h1>TodoMatic</h1>
-      <Form addTask={addTask} />
-      <div className="filters btn-group stack-exception">
-        {filterList}
-      </div>
-      <h2 id="list-heading">{headingText}</h2>
-      <ul
-        role="list"
-        className="todo-list stack-large stack-exception"
-        aria-labelledby="list-heading"
-      >
-        {taskList}
-      </ul>
+    <h1>Geo TodoMatic</h1>
+    <Form addTask={addTask} geoFindMe={geoFindMe} />{" "}
+    <div className="filters btn-group stack-exception">{filterList}</div>
+    <h2 id="list-heading" tabIndex="-1" ref={listHeadingRef}>
+    {headingText}
+    </h2>
+    <ul
+    aria-labelledby="list-heading"
+    className="todo-list stack-large stack-exception"
+    role="list"
+    >
+    {taskList}
+    </ul>
     </div>
-  );
+   );
 }
 
 export default App;

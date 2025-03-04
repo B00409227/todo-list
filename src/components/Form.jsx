@@ -1,18 +1,29 @@
-//Form.jsx
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from 'react';
 
-function Form(props) {
+export default function Form(props) {
   const [name, setName] = useState("");
+  const [addition, setAddition] = useState(false);
 
-  function handleChange(event) {
-    setName(event.target.value);
+  useEffect(() => {
+    if (addition) {
+      console.log("useEffect detected addition");
+      props.geoFindMe && props.geoFindMe();
+      setAddition(false);
+    }
+  }, [addition, props.geoFindMe]);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (name.trim()) {
+      console.log("Submitting task:", name);
+      props.addTask(name);
+      setName("");
+      setAddition(true);
+    }
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    props.addTask(name);
-    setName("");
+  function handleChange(e) {
+    setName(e.target.value);
   }
 
   return (
@@ -22,6 +33,7 @@ function Form(props) {
           What needs to be done?
         </label>
       </h2>
+
       <input
         type="text"
         id="new-todo-input"
@@ -37,5 +49,3 @@ function Form(props) {
     </form>
   );
 }
-
-export default Form;
